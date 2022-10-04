@@ -31,4 +31,8 @@ public class ArticleHibernateDAO implements ArticleDAO {
     this.sessionFactory.getCurrentSession().saveOrUpdate(article);
   }
 
+  public void deleteByID(Integer articleId) {
+    this.sessionFactory.getCurrentSession().delete(findByID(articleId));
+  }
+
 }

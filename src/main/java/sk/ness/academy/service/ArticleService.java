@@ -18,4 +18,7 @@ public interface ArticleService {
 	  /** Creates new {@link Article}s by ingesting all articles from json */
 	  void ingestArticles(String jsonArticles);
 
+	  /** Deletes new {@link Article} with provided ID */
+	  void deleteByID(Integer articleId);
+
 	}

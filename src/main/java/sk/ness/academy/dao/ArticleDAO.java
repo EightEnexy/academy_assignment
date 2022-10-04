@@ -12,6 +12,8 @@ public interface ArticleDAO {
 	  /** Returns all available {@link Article}s */
 	  List<Article> findAll();
 
+	  void deleteByID(Integer articleId);
+
 	  /** Persists {@link Article} into the DB */
 	  void persist(Article article);
 	}
