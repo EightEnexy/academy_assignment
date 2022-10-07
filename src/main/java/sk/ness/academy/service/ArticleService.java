@@ -15,6 +15,9 @@ public interface ArticleService {
 	  /** Creates new {@link Article} */
 	  void createArticle(Article article);
 
+	  /** Returns all found {@link Article}s */
+	  List<Article> searchByText(final String searchText);
+
 	  /** Creates new {@link Article}s by ingesting all articles from json */
 	  void ingestArticles(String jsonArticles);
 

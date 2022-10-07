@@ -16,4 +16,7 @@ public interface ArticleDAO {
 
 	  /** Persists {@link Article} into the DB */
 	  void persist(Article article);
+
+	  /** Returns all found {@link Article}s */
+	  List<Article> searchByText(final String searchText);
 	}

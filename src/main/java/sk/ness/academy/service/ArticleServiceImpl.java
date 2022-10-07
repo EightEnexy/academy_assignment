@@ -54,4 +54,9 @@ public class ArticleServiceImpl implements ArticleService {
     this.articleDAO.deleteByID(articleId);
   }
 
+  @Override
+  public List<Article> searchByText(final String searchText) {
+    return this.articleDAO.searchByText(searchText);
+  }
+
 }
