@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import sk.ness.academy.domain.Article;
 import sk.ness.academy.domain.Comment;
+import sk.ness.academy.dto.ArticleWithComments;
 import sk.ness.academy.dto.Author;
 import sk.ness.academy.dto.AuthorStats;
 import sk.ness.academy.service.ArticleService;
@@ -40,14 +41,11 @@ public class BlogController {
   }
 
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.GET)
-  public ResponseEntity<?> getArticle(@PathVariable final Integer articleId) {
-
-      Map<String, Object> response = new LinkedHashMap<>();
-
-      response.put("article",this.articleService.findByID(articleId));
-      response.put("comments",this.commentService.getAllComments(articleId));
-
-	  return new ResponseEntity<>(response, HttpStatus.OK);
+  public ArticleWithComments getArticle(@PathVariable final Integer articleId) {
+      ArticleWithComments article = new ArticleWithComments();
+      article.setArticle(this.articleService.findByID(articleId));
+      article.setComments(this.commentService.getAllComments(articleId));
+	  return article;
   }
 
   @RequestMapping(value = "articles/search/{searchText}", method = RequestMethod.GET)
@@ -69,7 +67,7 @@ public class BlogController {
 
   @RequestMapping(value = "authors/stats", method = RequestMethod.GET)
   public List<AuthorStats> authorStats() {
-	  return this.authorService.getAuthorStats();
+        return this.authorService.getAuthorStats();
   }
 
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.DELETE)
@@ -100,6 +98,8 @@ public class BlogController {
   public Comment getComment(@PathVariable final Integer commentId) {
     return this.commentService.findByID(commentId);
   }
+
+
 
 
 
