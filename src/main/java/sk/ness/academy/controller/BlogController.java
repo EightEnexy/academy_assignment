@@ -18,6 +18,7 @@ import sk.ness.academy.domain.Comment;
 import sk.ness.academy.dto.ArticleWithComments;
 import sk.ness.academy.dto.Author;
 import sk.ness.academy.dto.AuthorStats;
+import sk.ness.academy.exception.BlogException;
 import sk.ness.academy.service.ArticleService;
 import sk.ness.academy.service.AuthorService;
 import sk.ness.academy.service.CommentService;
@@ -34,6 +35,15 @@ public class BlogController {
   @Resource
   private CommentService commentService;
 
+  private boolean isValidArticle(Article article) {
+    return article != null;
+  }
+
+  private boolean isValidComment(Comment comment) {
+    return comment != null;
+  }
+
+
   // ~~ Article
   @RequestMapping(value = "articles", method = RequestMethod.GET)
   public List<Article> getAllArticles() {
@@ -43,7 +53,13 @@ public class BlogController {
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.GET)
   public ArticleWithComments getArticle(@PathVariable final Integer articleId) {
       ArticleWithComments article = new ArticleWithComments();
-      article.setArticle(this.articleService.findByID(articleId));
+
+      Article art = this.articleService.findByID(articleId);
+      if (!isValidArticle(art)) {
+        throw new BlogException("Article " + articleId + " not found", HttpStatus.NOT_FOUND);
+      }
+
+      article.setArticle(art);
       article.setComments(this.commentService.getAllComments(articleId));
 	  return article;
   }
@@ -54,8 +70,11 @@ public class BlogController {
   }
 
   @RequestMapping(value = "articles", method = RequestMethod.PUT)
-  public void addArticle(@RequestBody final Article article) {
-	  this.articleService.createArticle(article);
+  public void addArticle(@RequestBody(required=false) final Article article) {
+    if (!isValidArticle(article)) {
+      throw new BlogException("Required request body is missing", HttpStatus.BAD_REQUEST);
+    }
+    this.articleService.createArticle(article);
   }
 
 
@@ -72,7 +91,12 @@ public class BlogController {
 
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.DELETE)
   public void deleteArticle(@PathVariable final Integer articleId) {
+    try {
       this.articleService.deleteByID(articleId);
+    }
+    catch(IllegalArgumentException e) {
+      throw new BlogException("Article " + articleId + "not found", HttpStatus.NOT_FOUND);
+    }
   }
 
   // ~~ Comment
@@ -83,25 +107,35 @@ public class BlogController {
   }
 
   @RequestMapping(value = "articles/{articleId}/comments", method = RequestMethod.PUT)
-  public void addComment(@RequestBody final Comment comment, @PathVariable final Integer articleId) {
+  public void addComment(@RequestBody(required=false) final Comment comment, @PathVariable final Integer articleId) {
     Article article = articleService.findByID(articleId);
+    if (!isValidArticle(article)) {
+      throw new BlogException("Article " + articleId + " not found", HttpStatus.NOT_FOUND);
+    }
+    if(!isValidComment(comment)) {
+      throw new BlogException("Required request body is missing", HttpStatus.BAD_REQUEST);
+    }
     comment.setArticle(article);
     commentService.addComment(comment);
   }
 
   @RequestMapping(value = "comments/{commentId}", method = RequestMethod.DELETE)
   public void deleteComment(@PathVariable final Integer commentId) {
-    this.commentService.deleteByID(commentId);
+    try {
+      this.commentService.deleteByID(commentId);
+    }
+    catch(IllegalArgumentException e) {
+      throw new BlogException("Comment " + commentId + " not found", HttpStatus.NOT_FOUND);
+    }
   }
 
   @RequestMapping(value = "comments/{commentId}", method = RequestMethod.GET)
   public Comment getComment(@PathVariable final Integer commentId) {
-    return this.commentService.findByID(commentId);
+    Comment comment = this.commentService.findByID(commentId);
+    if (!isValidComment(comment)) {
+      throw new BlogException("Comment " + commentId + " not found", HttpStatus.NOT_FOUND);
+    }
+    return comment;
   }
-
-
-
-
-
 
 }
