@@ -31,4 +31,13 @@ public class ArticleHibernateDAO implements ArticleDAO {
     this.sessionFactory.getCurrentSession().saveOrUpdate(article);
   }
 
+  public void deleteByID(Integer articleId) {
+    this.sessionFactory.getCurrentSession().delete(findByID(articleId));
+  }
+
+  public List<Article> searchByText(final String searchText) {
+    return this.sessionFactory.getCurrentSession().createSQLQuery("select * from articles where title LIKE ? OR text LIKE ? OR author LIKE ?")
+            .setParameter(1, "%" + searchText + "%").setParameter(2, "%" + searchText + "%").setParameter(3, "%" + searchText + "%").addEntity(Article.class).list();
+  }
+
 }
