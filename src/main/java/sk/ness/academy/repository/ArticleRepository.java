@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import sk.ness.academy.domain.Article;
 import sk.ness.academy.dto.AuthorStats;
+import sk.ness.academy.dto.AuthorStatsInt;
 
 import java.util.List;
 
@@ -25,9 +26,9 @@ public interface ArticleRepository extends JpaRepository <Article, Integer>, Jpa
         return (article, cq, cb) -> cb.like(article.get("title"), "%" + author + "%");
     }
 
-    @Query(value = "SELECT a.author AS name, count(*) AS articleCount FROM articles a GROUP by a.author",
-            nativeQuery = true)
-    List<Article> findAuthorStats();
+
+    @Query(value = "SELECT a.author AS authorName, COUNT(a) AS articleCount FROM articles a GROUP BY a.author", nativeQuery = true)
+    List<AuthorStatsInt> getCountByAuthor();
 
 
 }

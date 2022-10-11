@@ -21,6 +21,7 @@ import sk.ness.academy.domain.Comment;
 import sk.ness.academy.dto.ArticleWithComments;
 import sk.ness.academy.dto.Author;
 import sk.ness.academy.dto.AuthorStats;
+import sk.ness.academy.dto.AuthorStatsInt;
 import sk.ness.academy.exception.BlogException;
 import sk.ness.academy.repository.ArticleRepository;
 import sk.ness.academy.repository.CommentRepository;
@@ -81,12 +82,9 @@ public class BlogController {
 
 
   @RequestMapping(value = "authors/stats", method = RequestMethod.GET)
-  public List<AuthorStats> authorStats() {
+  public List<AuthorStatsInt> authorStats() {
         ModelMapper modelMapper = new ModelMapper();
-        return this.articleRepository.findAuthorStats()
-                .stream()
-                .map(article -> modelMapper.map(article, AuthorStats.class))
-                .collect(Collectors.toList());
+        return this.articleRepository.getCountByAuthor();
   }
 
 
@@ -121,6 +119,6 @@ public class BlogController {
   @RequestMapping(value = "comments/{commentId}", method = RequestMethod.GET)
   public Comment getComment(@PathVariable final Integer commentId) {
     return commentRepository.findById(commentId)
-            .orElseThrow(() -> new BlogException("Article " + commentId + " not found", HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new BlogException("Comment " + commentId + " not found", HttpStatus.NOT_FOUND));
   }
 }
