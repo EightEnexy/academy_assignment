@@ -25,7 +25,8 @@ public interface ArticleRepository extends JpaRepository <Article, Integer>, Jpa
         return (article, cq, cb) -> cb.like(article.get("title"), "%" + author + "%");
     }
 
-    @Query("select a.author as name, count(id) as articleCount from articles a group by a.author")
+    @Query(value = "SELECT a.author AS name, count(*) AS articleCount FROM articles a GROUP by a.author",
+            nativeQuery = true)
     List<Article> findAuthorStats();
 
 

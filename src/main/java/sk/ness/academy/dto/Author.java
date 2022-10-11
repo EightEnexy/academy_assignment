@@ -2,14 +2,14 @@ package sk.ness.academy.dto;
 
 public class Author {
 
-	  private String name;
+	  private String author;
 
-	  public String getName() {
-	    return this.name;
+	  public String getAuthor() {
+	    return this.author;
 	  }
 
-	  public void setName(final String name) {
-	    this.name = name;
+	  public void setAuthor(final String author) {
+	    this.author = author;
 	  }
 
 	}
