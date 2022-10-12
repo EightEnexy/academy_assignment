@@ -17,4 +17,6 @@ public interface CommentDAO {
 
     /** Find {@link Comment} by Id*/
     Comment findByID(final Integer commentId);
+
+    void deleteAllCommentsByID(final Integer articleId);
 }

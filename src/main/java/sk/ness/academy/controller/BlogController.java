@@ -92,6 +92,7 @@ public class BlogController {
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.DELETE)
   public void deleteArticle(@PathVariable final Integer articleId) {
     try {
+      this.commentService.deleteAllCommentsByID(articleId);
       this.articleService.deleteByID(articleId);
     }
     catch(IllegalArgumentException e) {

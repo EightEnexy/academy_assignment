@@ -22,4 +22,7 @@ public interface CommentService {
     /** Returns {@link Comment} */
     Comment findByID(final Integer commentId);
 
+    /** Deletes all articles{@link Comment}s */
+    void deleteAllCommentsByID(final Integer articleId);
+
 }
