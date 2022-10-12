@@ -34,4 +34,9 @@ public class CommentImpl implements CommentService {
     public Comment findByID(final Integer commentId) {
         return commentDAO.findByID(commentId);
     }
+
+    @Override
+    public void deleteAllCommentsByID(final Integer articleId) {
+        commentDAO.deleteAllCommentsByID(articleId);
+    }
 }
