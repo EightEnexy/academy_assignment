@@ -25,6 +25,9 @@ import sk.ness.academy.dto.AuthorStatsInt;
 import sk.ness.academy.exception.BlogException;
 import sk.ness.academy.repository.ArticleRepository;
 import sk.ness.academy.repository.CommentRepository;
+import sk.ness.academy.service.ArticleService;
+import sk.ness.academy.service.AuthorService;
+import sk.ness.academy.service.CommentService;
 
 import javax.annotation.Resource;
 
@@ -35,46 +38,50 @@ import static sk.ness.academy.repository.ArticleRepository.*;
 public class BlogController {
 
   @Autowired
-  private ArticleRepository articleRepository;
+  private ArticleService articleService;
 
   @Autowired
-  private CommentRepository commentRepository;
+  private CommentService commentService;
+
+  @Autowired
+  private AuthorService authorService;
+
+
 
 
   // ~~ Article
   @RequestMapping(value = "articles", method = RequestMethod.GET)
   public List<Article> getAllArticles() {
-	  return this.articleRepository.findAll();
+	  return this.articleService.findAll();
   }
 
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.GET)
   public ArticleWithComments getArticle(@PathVariable final Integer articleId) {
+
       ArticleWithComments article = new ArticleWithComments();
 
-      Article art = this.articleRepository.findById(articleId).
-              orElseThrow(()-> new BlogException("Article " + articleId + " not found", HttpStatus.NOT_FOUND));
+      Article art = this.articleService.findById(articleId);
 
       article.setArticle(art);
-      article.setComments(this.commentRepository.findByArticleId(articleId));
+      article.setComments(this.commentService.findByArticleId(articleId));
 	  return article;
   }
 
   @RequestMapping(value = "articles/search/{searchText}", method = RequestMethod.GET)
   public List<Article> searchArticle(@PathVariable final String searchText) {
-      return this.articleRepository.findAll(
-              where(titleContains(searchText)).or(textContains(searchText)).or(authorContains(searchText)));
+      return this.articleService.findAll(searchText);
   }
 
   @RequestMapping(value = "articles", method = RequestMethod.PUT)
   public void addArticle(@RequestBody(required=false) final Article article) {
-    articleRepository.save(article);
+    articleService.save(article);
   }
 
   // ~~ Author
   @RequestMapping(value = "authors", method = RequestMethod.GET)
   public List<Author> getAllAuthors() {
       ModelMapper modelMapper = new ModelMapper();
-	  return this.articleRepository.findAll()
+	  return this.articleService.findAll()
               .stream()
               .map(article -> modelMapper.map(article, Author.class))
               .collect(Collectors.toList());
@@ -82,43 +89,43 @@ public class BlogController {
 
 
   @RequestMapping(value = "authors/stats", method = RequestMethod.GET)
-  public List<AuthorStatsInt> authorStats() {
-        ModelMapper modelMapper = new ModelMapper();
-        return this.articleRepository.getCountByAuthor();
+  public List<AuthorStats> authorStats() {
+        return this.authorService.getCountByAuthor();
   }
+
 
 
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.DELETE)
   public void deleteArticle(@PathVariable final Integer articleId) {
-    articleRepository.findById(articleId).map(article -> {
-      articleRepository.delete(article);
-      return ResponseEntity.ok().build();
-    }).orElseThrow(() -> new BlogException("Article " + articleId + "not found", HttpStatus.NOT_FOUND));
+      this.articleService.deleteArticle(articleId);
   }
 
   // ~~ Comment
 
   @RequestMapping(value = "articles/{articleId}/comments", method = RequestMethod.GET)
   public List<Comment> getAllComments(@PathVariable final Integer articleId) {
-    return this.commentRepository.findByArticleId(articleId);
+    return this.commentService.findByArticleId(articleId);
   }
 
   @RequestMapping(value = "articles/{articleId}/comments", method = RequestMethod.PUT)
   public void addComment(@RequestBody(required=false) final Comment comment, @PathVariable final Integer articleId) {
-    articleRepository.findById(articleId).map(article -> {
+    try {
+      Article article = articleService.findById(articleId);
       comment.setArticle(article);
-      return commentRepository.save(comment);
-    }).orElseThrow(() -> new BlogException("Article " + articleId + " not found", HttpStatus.NOT_FOUND));
+      commentService.save(comment);
+    }
+    catch (Exception e) {
+      throw new BlogException("Article " + articleId + " not found", HttpStatus.NOT_FOUND);
+    }
   }
 
   @RequestMapping(value = "comments/{commentId}", method = RequestMethod.DELETE)
   public void deleteComment(@PathVariable final Integer commentId) {
-    commentRepository.deleteById(commentId);
+    commentService.deleteById(commentId);
   }
 
   @RequestMapping(value = "comments/{commentId}", method = RequestMethod.GET)
   public Comment getComment(@PathVariable final Integer commentId) {
-    return commentRepository.findById(commentId)
-            .orElseThrow(() -> new BlogException("Comment " + commentId + " not found", HttpStatus.NOT_FOUND));
+    return this.commentService.findById(commentId);
   }
 }

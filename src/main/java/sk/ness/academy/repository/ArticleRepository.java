@@ -27,8 +27,5 @@ public interface ArticleRepository extends JpaRepository <Article, Integer>, Jpa
     }
 
 
-    @Query(value = "SELECT a.author AS authorName, COUNT(a) AS articleCount FROM articles a GROUP BY a.author", nativeQuery = true)
-    List<AuthorStatsInt> getCountByAuthor();
-
 
 }
