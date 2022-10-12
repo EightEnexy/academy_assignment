@@ -87,16 +87,21 @@ public class BlogController {
               .collect(Collectors.toList());
   }
 
-
+  // Native Queries don't work also tried DTO projections
   @RequestMapping(value = "authors/stats", method = RequestMethod.GET)
   public List<AuthorStats> authorStats() {
-        return this.authorService.getCountByAuthor();
+        ModelMapper modelMapper = new ModelMapper();
+        return this.authorService.getCountByAuthor()
+                .stream()
+                .map(article -> modelMapper.map(article, AuthorStats.class))
+                .collect(Collectors.toList());
   }
 
 
 
   @RequestMapping(value = "articles/{articleId}", method = RequestMethod.DELETE)
   public void deleteArticle(@PathVariable final Integer articleId) {
+      this.commentService.deleteByArticleId(articleId);
       this.articleService.deleteArticle(articleId);
   }
 

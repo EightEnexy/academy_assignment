@@ -33,4 +33,8 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BlogException("Comment " + commentId + " not found", HttpStatus.NOT_FOUND));
     }
+
+    public void deleteByArticleId(final Integer articleId) {
+        this.commentRepository.deleteByArticleId(articleId);
+    }
 }

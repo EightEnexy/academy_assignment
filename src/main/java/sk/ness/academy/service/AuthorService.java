@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface AuthorService {
 
-    List <AuthorStats> getCountByAuthor();
+    List <Article> getCountByAuthor();
 }

@@ -18,7 +18,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Autowired
     AuthorRepository authorRepository;
 
-    public List<AuthorStats> getCountByAuthor() {
+    public List<Article> getCountByAuthor() {
         return this.authorRepository.getCountByAuthor();
     }
 }

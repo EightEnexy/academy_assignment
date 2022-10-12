@@ -14,5 +14,7 @@ public interface CommentService {
 
     Comment findById(final Integer commentId);
 
+    void deleteByArticleId(final Integer articleId);
+
 
 }
